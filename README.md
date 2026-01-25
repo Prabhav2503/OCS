@@ -4,6 +4,17 @@ A full-stack web application for managing on-campus placement/recruitment proces
 
 ---
 
+## 🌐 Live Demo
+
+| Service | URL |
+|---------|-----|
+| **Frontend** | [https://ocs-frontend-one.vercel.app](https://ocs-frontend-one.vercel.app) |
+| **Backend API** | [https://ocs-backend-lac.vercel.app](https://ocs-backend-lac.vercel.app) |
+
+> Both frontend and backend are deployed on **Vercel** with CORS properly configured.
+
+---
+
 ## 📝 Development Credits
 
 | Component | Developed By |
@@ -20,15 +31,18 @@ A full-stack web application for managing on-campus placement/recruitment proces
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: JWT (JSON Web Tokens)
 - **Validation**: express-validator
+- **Deployment**: Vercel (Serverless)
 - **Other**: cookie-parser, cors, dotenv
 
 ### Frontend
 - **Framework**: React 19 with Vite
 - **Styling**: Tailwind CSS
-- **HTTP Client**: Axios
+- **HTTP Client**: Axios (with credentials support)
 - **Routing**: React Router DOM
 - **Notifications**: React Hot Toast
 - **Icons**: React Icons
+- **Password Hashing**: crypto-js (MD5)
+- **Deployment**: Vercel
 
 ---
 
@@ -128,7 +142,9 @@ const middleware = (req, res, next) => {
 
 ## 🛣️ API Endpoints - Detailed Documentation
 
-### Base URL: `http://localhost:3000/api`
+### Base URL
+- **Production**: `https://ocs-backend-lac.vercel.app/api`
+- **Local Development**: `http://localhost:3000/api`
 
 ---
 
@@ -589,7 +605,7 @@ const middleware = (req, res, next) => {
 - npm or yarn
 - Supabase account with project set up
 
-### Backend Setup
+### Backend Setup (Local Development)
 
 1. Navigate to backend directory:
 ```bash
@@ -615,7 +631,7 @@ npm run dev    # Development with nodemon
 npm start      # Production
 ```
 
-### Frontend Setup
+### Frontend Setup (Local Development)
 
 1. Navigate to frontend directory:
 ```bash
@@ -627,17 +643,70 @@ cd frontend
 npm install
 ```
 
-3. Update API base URL in `src/api/axios.js` if needed:
-```javascript
-const API_BASE_URL = 'http://localhost:3000/api';
+3. Create `.env` file for local development:
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
-4. Start the development server:
+4. For production, the environment variable is set to:
+```env
+VITE_API_BASE_URL=https://ocs-backend-lac.vercel.app/api
+```
+
+5. Start the development server:
 ```bash
 npm run dev
 ```
 
-5. Open `http://localhost:5173` in your browser
+6. Open `http://localhost:5173` in your browser
+
+---
+
+## ☁️ Deployment Configuration
+
+### Backend (Vercel)
+
+The backend is deployed as a serverless function on Vercel with the following CORS configuration:
+
+```javascript
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://ocs-frontend-one.vercel.app"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
+```
+
+**Environment Variables on Vercel**:
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `JWT_SECRET`
+
+### Frontend (Vercel)
+
+The frontend uses environment variables to switch between local and production API:
+
+```javascript
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+```
+
+**Environment Variables on Vercel**:
+- `VITE_API_BASE_URL=https://ocs-backend-lac.vercel.app/api`
+
+### Axios Configuration
+
+The frontend Axios client is configured with credentials support for cross-origin requests:
+
+```javascript
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,  // Required for CORS with cookies
+});
+```
 
 ---
 
