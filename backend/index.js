@@ -11,7 +11,16 @@ import middleware from "./middleware/authcontext.js";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",          
+      "https://your-frontend.vercel.app/api/" 
+    ],
+    credentials: true,
+  })
+);
+
 app.use(cookieParser());
 app.use(express.json());
 
