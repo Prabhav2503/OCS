@@ -13,13 +13,13 @@ const app = express();
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",          
-      "https://your-frontend.vercel.app/api/" 
-    ],
+    origin: ["http://localhost:5173", "https://ocs-frontend-lac.vercel.app/api"],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
+
+app.options("*", cors());
 
 app.use(cookieParser());
 app.use(express.json());
